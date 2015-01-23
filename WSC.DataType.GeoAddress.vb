@@ -57,7 +57,15 @@ Namespace WSC.DataType.GeoAddress
 
         Public ReadOnly Property IsValid As String
             Get
-                Return Me._data.Value
+                'Return Me._data.Value
+                If Not String.IsNullOrEmpty(txtAddress.Text) Then
+                    Dim d = Data.Deserialize(Me._data.Value)
+                    If (d.Lat > 0) Then
+                        Return txtAddress.Text
+                    End If
+                End If
+
+                Return Nothing
             End Get
         End Property
 
@@ -107,7 +115,7 @@ Namespace WSC.DataType.GeoAddress
 
         Sub UpdatePreview(d As Data)
             If d IsNot Nothing Then
-                Me.divPreview.InnerHtml = d.Lat & "," & d.Lon
+                Me.divPreview.InnerHtml = String.Format("({0},{1}) <a href=""https://www.google.com/maps/place/{0},{1}"" target=""_blank"">View Map</a>", d.Lat, d.Lon)
             Else
                 Me.divPreview.InnerHtml = String.Empty
             End If
@@ -152,7 +160,10 @@ Namespace WSC.DataType.GeoAddress
             If String.IsNullOrEmpty(serializedState) Then Return Nothing
 
             Dim ret As New Data()
-            ret = Newtonsoft.Json.JsonConvert.DeserializeObject(Of Data)(serializedState)
+            Try
+                ret = Newtonsoft.Json.JsonConvert.DeserializeObject(Of Data)(serializedState)
+            Catch ex As Exception
+            End Try
 
             Return ret
         End Function
