@@ -119,7 +119,7 @@ Namespace WSC.DataType.XMLSelectList
         Protected Overrides Sub RenderContents(writer As HtmlTextWriter)
             'writer.AddPrevalueRow("ID", New LiteralControl(Me.m_DataType.DataTypeDefinitionId))
             writer.AddPrevalueRow("XML File Path:", "Specify the path to the XML file.", Me.xmlFilePath)
-            writer.AddPrevalueRow("XPath Expression:", "The XPath expression to select the nodes used in the XML file.", Me.txtXPathExpression)
+            writer.AddPrevalueRow("XPath Expression:", "The XPath expression to select the nodes used in the XML file. $SiteID is available", Me.txtXPathExpression)
             writer.AddPrevalueRow("Text column:", "The name of the field used for the item's display text.", Me.txtTextColumn)
             writer.AddPrevalueRow("Value column:", "The name of the field used for the item's value.", Me.txtValueColumn)
             writer.AddPrevalueRow("Type:", "The type of the field used.", Me.ddlType)
@@ -195,6 +195,18 @@ Namespace WSC.DataType.XMLSelectList
 
             If Not Me.Page.IsPostBack Then
                 Dim path = IO.IOHelper.MapPath(Me.Options.XmlFilePath)
+                If Me.Options.XPathExpression.Contains("$SiteID") Then
+                    Dim id = HttpContext.Current.Request("id")
+                    Dim doc = umbraco.Core.ApplicationContext.Current.Services.ContentService.GetById(id)
+                    doc = umbraco.Core.ApplicationContext.Current.Services.ContentService.GetById(doc.Path.Split(",")(1))
+                    'While doc.Level > 1
+                    '    doc = umbraco.Core.ApplicationContext.Current.Services.ContentService.GetById(doc.ParentId)
+                    'End While
+                    'Me.Controls.Add(New LiteralControl("[[" & doc.Id & "]]"))
+                    'Me.Controls.Add(New LiteralControl("[[" & Me.Options.XPathExpression.Replace("$SiteID", doc.Id) & "]]"))
+                    Me.Options.XPathExpression = Me.Options.XPathExpression.Replace("$SiteID", doc.Id)
+                End If
+
                 If System.IO.File.Exists(path) Then
                     Dim xmlDS As New XmlDataSource()
                     xmlDS.DataFile = path

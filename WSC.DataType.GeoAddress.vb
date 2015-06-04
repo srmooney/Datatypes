@@ -128,6 +128,10 @@ Namespace WSC.DataType.GeoAddress
 
     Public Class Data
         Property Address As String = String.Empty
+        Property Street As String = String.Empty
+        Property City As String = String.Empty
+        Property State As String = String.Empty
+        Property PostalCode As String = String.Empty
         Property Lat As Double = 0
         Property Lon As Double = 0
 
@@ -142,10 +146,22 @@ Namespace WSC.DataType.GeoAddress
         Private Sub SetLocation()
             Dim wc As New Net.WebClient()
             Try
-                Dim locationJSON = wc.DownloadString("https://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=" & Me.Address)
-                Dim location = Newtonsoft.Json.JsonConvert.DeserializeObject(locationJSON)
-                Me.Lat = location("results")(0)("geometry")("location")("lat").value
-                Me.Lon = location("results")(0)("geometry")("location")("lng").value
+                Dim locationJSON = wc.DownloadString("https://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=" & HttpContext.Current.Server.UrlEncode(Me.Address))
+                'Dim location = Newtonsoft.Json.JsonConvert.DeserializeObject(locationJSON)
+                'Dim location = Newtonsoft.Json.Linq.JObject.Parse(locationJSON)
+                'Me.Lat = location("results")(0)("geometry")("location")("lat").value
+                'Me.Lon = location("results")(0)("geometry")("location")("lng").value
+                'Me.Lat = location.SelectToken("results.geometry.location.lat").ToString
+                'Me.Lat = location.SelectToken("results.geometry.location.lat").ToString
+                Dim result = Newtonsoft.Json.JsonConvert.DeserializeObject(Of Geocoder.GeocoderResult)(locationJSON).results(0)
+
+                Me.Lat = result.geometry.location.lat
+                Me.Lon = result.geometry.location.lng
+                Me.Street = result.address_components.FirstOrDefault(Function(x) x.types.Contains("street_number")).long_name
+                Me.Street &= " " & result.address_components.FirstOrDefault(Function(x) x.types.Contains("route")).short_name
+                Me.City = result.address_components.FirstOrDefault(Function(x) x.types.Contains("locality")).long_name
+                Me.State = result.address_components.FirstOrDefault(Function(x) x.types.Contains("administrative_area_level_1")).short_name
+                Me.PostalCode = result.address_components.FirstOrDefault(Function(x) x.types.Contains("postal_code")).short_name
 
             Catch ex As Exception
             End Try
@@ -167,5 +183,36 @@ Namespace WSC.DataType.GeoAddress
 
             Return ret
         End Function
+
+        
     End Class
+    Namespace Geocoder
+        Public Class GeocoderResult
+            Property status As String
+            Property results As results()
+        End Class
+
+        Public Class results
+            Public Property formatted_address As String
+            Public Property geometry As geometry
+            Property types As String()
+            Property address_components As address_component()
+        End Class
+
+        Public Class geometry
+            Public Property location_type As String
+            Public Property location As location
+        End Class
+
+        Public Class location
+            Property lat As String
+            Property lng As String
+        End Class
+
+        Public Class address_component
+            Property long_name As String
+            Property short_name As String
+            Property types As String()
+        End Class
+    End Namespace
 End Namespace
