@@ -4,9 +4,9 @@ Imports umbraco
 Imports System.Web.UI.WebControls
 Imports System.Web.UI
 
-Namespace WSC.DataType
+Namespace WSC.Datatype
     Namespace YouTube
-        Public Class DataType
+        Public Class Datatype
             Inherits umbraco.cms.businesslogic.datatype.AbstractDataEditor
 
             Private _Editor As IDataEditor
