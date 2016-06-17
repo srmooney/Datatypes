@@ -125,6 +125,9 @@ Namespace WSC.DataType.Children
                     Next
                     sb.Append("</tbody>")
                     sb.Append("</table>")
+					sb.AppendLine("<style>")
+					sb.AppendFormat("#{0} th, #{0} td {{ width: auto; }}", Me.ClientID)
+					sb.AppendLine("</style>")
                     sb.AppendLine("<script>")
                     sb.AppendLine("$(function(){")
                     sb.AppendLine(" var p = UmbClientMgr.mainTree().findNode(" & parentID & ", false);")
