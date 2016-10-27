@@ -1,0 +1,12 @@
+.wsc-recurring-event div.row { margin: 0 0 10px 0; }
+.wsc-recurring-event div.label { font-weight: bold; }
+.wsc-recurring-event div.description { color: #666; font-style: italic; margin: 3px 0 10px 0; }
+.wsc-recurring-event .validator { color: red; display: block; font-size: 11px; margin-bottom: 3px; margin-top: 3px; visibility: visible; }
+.wsc-recurring-event h3 { color: #666; font-style: italic; font-weight: bold; margin: 3px 0 10px 0; }
+.wsc-recurring-event .ui-datepicker-unselectable .ui-state-default { color: #ccc; }
+.wsc-recurring-event .selected { }
+.wsc-recurring-event .selected .ui-state-default { background: #F3A1A2; }
+.wsc-recurring-event .holiday .ui-state-default { background: #CDFAFE; }
+.wsc-recurring-event div[data-parameter] { display: none; }
+.wsc-recurring-event .datepicker + table { margin-top: 10px; }
+.wsc-recurring-event .datepicker + table td { padding-right: 10px; }
