@@ -97,18 +97,26 @@ Namespace WSC
             Property ID As String
             Property isRetweet As Boolean
             Property Username As String
+            Property UserImage As String
+            Property UserHandle As String
             Property Text As String
             Property Time As DateTime
             Property Images As New List(Of String)
             Property Link As String
 
             Sub New(node As HtmlAgilityPack.HtmlNode)
+                For Each n In node.QuerySelectorAll(".tweet-text a[href^=""/""]")
+					n.Attributes("href").Value = "http://twitter.com" & n.Attributes("href").Value
+                Next
+
                 Me.ID = node.Attributes("data-item-id").Value
                 Me.isRetweet = node.QuerySelectorAll(".js-retweet-text").Count > 0
-                Me.Text = node.QuerySelector(".tweet-text").InnerText
+                Me.Text = node.QuerySelector(".tweet-text").InnerHtml
                 Me.Time = (New DateTime(1970, 1, 1, 0, 0, 0, 0)).AddMilliseconds(node.QuerySelector(".js-short-timestamp").Attributes("data-time-ms").Value)
                 Me.Link = node.Attributes("data-permalink-path").Value
-                Me.Username = node.Attributes("data-screen-name").Value
+                Me.Username = node.Attributes("data-name").Value
+                Me.UserHandle = node.Attributes("data-screen-name").Value
+                Me.UserImage = node.QuerySelector(".avatar").Attributes("src").Value
 
                 Dim pics = node.QuerySelectorAll(".multi-photos .multi-photo[data-image-url], [data-card-type=photo] [data-image-url]")
                 For Each pic In pics
